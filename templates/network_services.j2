@@ -25,6 +25,20 @@ tenants:
           - id: {{ vlan.vid }}
             name: {{ vlan.name | default('VLAN_' ~ vlan.vid) }}
             enabled: true
+{% if vlan.custom_fields is defined and vlan.custom_fields.bgp_peer_ip is defined and vlan.custom_fields.bgp_peer_as is defined %}
+{% if vlan.custom_fields.bgp_peer_ip and vlan.custom_fields.bgp_peer_as %}
+            bgp_peers:
+              - ip_address: {{ vlan.custom_fields.bgp_peer_ip }}
+                as: {{ vlan.custom_fields.bgp_peer_as }}
+{% endif %}
+{% endif %}
+{% if vlan.custom_fields is defined and vlan.custom_fields.ospf_enabled is defined and vlan.custom_fields.ospf_enabled %}
+            ospf:
+              enabled: true
+{% if vlan.custom_fields.ospf_area is defined and vlan.custom_fields.ospf_area %}
+              area: {{ vlan.custom_fields.ospf_area }}
+{% endif %}
+{% endif %}
 {% if devices_with_ip_count == all_l3leaf_count and devices_with_ip_count > 0 %}
             ip_address_virtual: {{ (vlan_anycast_ips | first).address }}
 {% elif devices_with_ip_count > 0 %}
